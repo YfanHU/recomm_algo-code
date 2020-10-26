@@ -5,6 +5,7 @@
 @IDE ：PyCharm
 """
 from surprise import Dataset, Reader
+import pandas as pd
 
 
 class SurpriseDataLoader():
@@ -16,3 +17,28 @@ class SurpriseDataLoader():
 
     def load_customdf(self, df, scale=(1, 5)):
         return Dataset.load_from_df(df, Reader(rating_scale=scale))
+
+
+class SklearnDataLoader():
+    @staticmethod
+    def load_builtin(str):
+        if str not in ['ml-100k', 'ml-1m', 'jester']:
+            raise ValueError('{} not valid.'.format(str))
+        else:
+            if str == 'ml-100k':
+                df_rating_path = './data/ml-100k/ml-100k/u.data'
+                df_user_info_path = './data/ml-100k/ml-100k/u.user'
+                df_movie_info_path = './data/ml-100k/ml-100k/u.item'
+                df_rating = pd.read_csv(df_rating_path, sep='\t',
+                                        names=['uid', 'iid', 'rating', 'timestamp'])
+                df_user_info = pd.read_csv(df_user_info_path, sep='|',
+                                           names='uid | age | gender | occupation | zip code'.split(' | '))
+                df_movie_info = pd.read_csv(df_movie_info_path, sep='|', encoding='latin-1',
+                                            names="iid | movie title | release date | video release date | IMDb URL | unknown | Action | Adventure | Animation | Children's | Comedy | Crime | Documentary | Drama | Fantasy | Film-Noir | Horror | Musical | Mystery | Romance | Sci-Fi | Thriller | War | Western"
+                                            .split(' | '))
+                df_rating = pd.merge(df_rating, df_user_info, how='left', on='uid')
+                df_rating = pd.merge(df_rating, df_movie_info, how='left', on='iid')
+                return df_rating.drop(['rating'], axis=1), df_rating[['rating']]
+            else:
+                pass
+
