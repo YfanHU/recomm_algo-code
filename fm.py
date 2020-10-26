@@ -37,7 +37,7 @@ class FM_model(nn.Module):
         linear_part = self.linear(x)
         inter_part1 = torch.mm(x, self.v.t())  # out_size = (batch, k)
         inter_part2 = torch.mm(torch.pow(x, 2), torch.pow(self.v, 2).t())  # out_size = (batch, k)
-        output = linear_part + 0.5 * torch.sum(torch.pow(inter_part1, 2) - inter_part2)
+        output = linear_part + 0.5 * torch.unsqueeze(torch.sum(torch.pow(inter_part1, 2) - inter_part2,1),1)
         return output  # out_size = (batch, 1)
 
     def forward(self, x):
