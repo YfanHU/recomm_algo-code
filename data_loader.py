@@ -4,6 +4,8 @@
 @File ：data_download.py
 @IDE ：PyCharm
 """
+# this file is used to formulate the famous movie-lens data for testing our models
+
 from surprise import Dataset, Reader
 import pandas as pd
 
