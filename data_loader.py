@@ -23,7 +23,7 @@ class SurpriseDataLoader():
 
 class SklearnDataLoader():
     @staticmethod
-    def load_builtin(str):
+    def load_builtin(str,classification = False):
         if str not in ['ml-100k', 'ml-1m', 'jester']:
             raise ValueError('{} not valid.'.format(str))
         else:
@@ -40,7 +40,10 @@ class SklearnDataLoader():
                                             .split(' | '))
                 df_rating = pd.merge(df_rating, df_user_info, how='left', on='uid')
                 df_rating = pd.merge(df_rating, df_movie_info, how='left', on='iid')
-                return df_rating.drop(['rating'], axis=1), df_rating[['rating']]
+                rating = df_rating[['rating']]
+                if classification:
+                    rating['rating'] = rating['rating'].squeeze().apply(lambda x:0 if x<3 else 1)
+                return df_rating.drop(['rating'], axis=1), rating
             else:
                 pass
 
