@@ -13,7 +13,7 @@ from 数据处理.类别变量处理 import df_get_dummies
 from 数据处理.归一化处理 import df_get_and_apply_scaler
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, f1_score
 
 target_scaler = MinMaxScaler()
 
@@ -62,4 +62,5 @@ if __name__ == '__main__':
     # x = None
     # y = model.predict(x)
     # y_real = scale_and_transform(y, reverse=True)
-    print(mean_squared_error(y_test, model.predict_proba(X_test)[:, 1]))
+    print('f1 score : {}'.format(f1_score(y_test, model.predict(X_test))))
+    print('mse error: {}'.format(mean_squared_error(y_test, model.predict_proba(X_test)[:, 1])))
