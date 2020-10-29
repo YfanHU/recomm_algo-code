@@ -38,12 +38,12 @@ class FM_model(nn.Module):
         inter_part1 = torch.mm(x, self.v.t())  # out_size = (batch, k)
         inter_part2 = torch.mm(torch.pow(x, 2), torch.pow(self.v, 2).t())  # out_size = (batch, k)
         output = linear_part + 0.5 * torch.unsqueeze(torch.sum(torch.pow(inter_part1, 2) - inter_part2, 1), 1)
-        return output  # out_size = (batch, 1)
+        return 5 * torch.sigmoid(output)  # out_size = (batch, 1)
 
     def forward(self, x):
         x = x.float()
         output = self.fm_layer(x)
-        return F.sigmoid(output)
+        return output
 
 
 if __name__ == '__main__':
@@ -59,10 +59,10 @@ if __name__ == '__main__':
 
     df_data, df_label = SklearnDataLoader.load_builtin('ml-100k')
     df_data = feature_engi(df_data)
-    df_label = scale_and_transform(df_label)
+    # df_label = scale_and_transform(df_label)
 
     # x_train, x_test, y_train, y_test = train_test_split(df_data.values, np.squeeze(df_label.values))
-    x_train, x_test, y_train, y_test = train_test_split(df_data.values, df_label)
+    x_train, x_test, y_train, y_test = train_test_split(df_data.values, df_label.values)
 
     # x_train = None
     # y_train = None
@@ -141,7 +141,7 @@ if __name__ == '__main__':
         # 测试集
         for step, (batch_x, batch_y) in enumerate(loader_test):  # 每个训练步骤
             # 此处省略一些训练步骤
-            optimizer.zero_grad()  # 如果不置零，Variable的梯度在每次backwrd的时候都会累加
+            # optimizer.zero_grad()  # 如果不置零，Variable的梯度在每次backwrd的时候都会累加
             output = fm(batch_x)
             output = output.transpose(1, 0)
             # 平方差
@@ -154,8 +154,8 @@ if __name__ == '__main__':
             #     l2_regularization += torch.norm(param, 2)
             # # loss = rmse_loss + l2_regularization
             loss = rmse_loss
-            loss.backward()
-            optimizer.step()  # 进行更新
+            # loss.backward()
+            # optimizer.step()  # 进行更新
         # 将每一次训练的数据进行存储，然后用于绘制曲线
         print('Epoch:{} ; test_LOSS:{:.4f}'.format(epoch, loss))
         loss_test_set.append(loss)
@@ -171,14 +171,14 @@ if __name__ == '__main__':
     plt.show()
     print("train_loss", loss)
 
-    # 保存训练好的模型
-    torch.save(fm.state_dict(), "data/fm_params.pt")
-    test_save_net = FM_model(n, k)
-
-    # 读取模型
-    test_save_net.load_state_dict(torch.load("data/fm_params.pt"))
-    # 测试网络
-    pred = test_save_net(torch.tensor(x_test))
-    pred = pred.transpose(1, 0)
-    rmse_loss = rmse(pred, y_test)
-    print("test_loss", rmse_loss)
+    # # 保存训练好的模型
+    # torch.save(fm.state_dict(), "data/fm_params.pt")
+    # test_save_net = FM_model(n, k)
+    #
+    # # 读取模型
+    # test_save_net.load_state_dict(torch.load("data/fm_params.pt"))
+    # # 测试网络
+    # pred = test_save_net(torch.tensor(x_test))
+    # pred = pred.transpose(1, 0)
+    # rmse_loss = rmse(pred, y_test)
+    # print("test_loss", rmse_loss)
