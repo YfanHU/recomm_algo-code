@@ -11,7 +11,8 @@ import pandas as pd
 
 
 class SurpriseDataLoader():
-    def load_builtin(self, str):
+    @staticmethod
+    def load_builtin(str):
         if str not in ['ml-100k', 'ml-1m', 'jester']:
             raise ValueError('{} not valid.'.format(str))
         else:
@@ -23,7 +24,7 @@ class SurpriseDataLoader():
 
 class SklearnDataLoader():
     @staticmethod
-    def load_builtin(str,classification = False):
+    def load_builtin(str, classification=False, rating_only=False):
         if str not in ['ml-100k', 'ml-1m', 'jester']:
             raise ValueError('{} not valid.'.format(str))
         else:
@@ -33,6 +34,8 @@ class SklearnDataLoader():
                 df_movie_info_path = './data/ml-100k/ml-100k/u.item'
                 df_rating = pd.read_csv(df_rating_path, sep='\t',
                                         names=['uid', 'iid', 'rating', 'timestamp'])
+                if rating_only:
+                    return df_rating[['uid','iid','rating']]
                 df_user_info = pd.read_csv(df_user_info_path, sep='|',
                                            names='uid | age | gender | occupation | zip code'.split(' | '))
                 df_movie_info = pd.read_csv(df_movie_info_path, sep='|', encoding='latin-1',
@@ -42,8 +45,7 @@ class SklearnDataLoader():
                 df_rating = pd.merge(df_rating, df_movie_info, how='left', on='iid')
                 rating = df_rating[['rating']]
                 if classification:
-                    rating['rating'] = rating['rating'].squeeze().apply(lambda x:0 if x<3 else 1)
+                    rating['rating'] = rating['rating'].squeeze().apply(lambda x: 0 if x < 3 else 1)
                 return df_rating.drop(['rating'], axis=1), rating
             else:
                 pass
-
