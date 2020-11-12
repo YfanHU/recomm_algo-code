@@ -11,4 +11,11 @@
 - logistic regression (see logis_reg.py)
 - gbdt + lr (see gbdt_plus_lr.py)
 
+### Deep Models
+- auto recoder (see auto_rec.py)
+- deep crossing (see deep_crossing.py)
+- neural collaborative filtering (see neuralcf.py)
+
+
+
 @ welcome to share your ideas : yfan_hu@qq.com 
